@@ -36,6 +36,8 @@ contract USDCTest is Test {
     bytes32[] public leaf;
     bytes32 public root;
 
+    uint256 initialBalance = 1000000000000000000;
+
     function setUp() public {
         // Fork mainnet
         uint256 forkId = vm.createFork("https://eth-mainnet.g.alchemy.com/v2/jPQVBwnGCpqJr_q90JyNyy70mjuYdlRx");
@@ -52,6 +54,16 @@ contract USDCTest is Test {
         leaf[aliceIndex] = keccak256(abi.encodePacked(alice));
         leaf[bobIndex] = keccak256(abi.encodePacked(bob));
         root = merkleTree.getRoot(leaf);
+
+        deal(address(usdc), alice, initialBalance);
+        deal(address(usdc), bob, initialBalance);
+        deal(address(usdc), carol, initialBalance);
+
+        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(0))));
+        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(1))));
+        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(2))));
+        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(3))));
+        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(4))));
     }
 
     function testUpgrade() public {
@@ -86,13 +98,14 @@ contract USDCTest is Test {
         // 先 Mint 後的餘額跟總量都有增加
         uint256 totalSupllyBefore = usdcV2.totalSupply();
         uint256 mintAmount = 10000000000;
+
         usdcV2.mint(aliceProof, mintAmount);
-        assertEq(usdcV2.balanceOf(alice), mintAmount);
+        assertEq(usdcV2.balanceOf(alice), initialBalance + mintAmount);
         assertEq(usdcV2.totalSupply(), totalSupllyBefore + mintAmount);
 
         // 測試 Transfer
-        usdcV2.transfer(aliceProof, bob, 6666666);
-        assertEq(usdcV2.balanceOf(bob), 6666666);
+        usdcV2.transfer(aliceProof, bob, mintAmount);
+        assertEq(usdcV2.balanceOf(bob), initialBalance + mintAmount);
 
         vm.stopPrank();
 
@@ -101,7 +114,7 @@ contract USDCTest is Test {
         vm.expectRevert("You are not in the whitelist!");
         usdcV2.mint(aliceProof, 10000000000);
         vm.expectRevert("You are not in the whitelist!");
-        usdcV2.transfer(aliceProof, bob, 500);
+        usdcV2.transfer(aliceProof, bob, initialBalance);
         vm.stopPrank();
     }
 }
