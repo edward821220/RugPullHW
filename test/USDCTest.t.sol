@@ -58,12 +58,6 @@ contract USDCTest is Test {
         deal(address(usdc), alice, initialBalance);
         deal(address(usdc), bob, initialBalance);
         deal(address(usdc), carol, initialBalance);
-
-        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(0))));
-        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(1))));
-        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(2))));
-        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(3))));
-        emit log_bytes32(vm.load(address(usdc), bytes32(uint256(4))));
     }
 
     function testUpgrade() public {
