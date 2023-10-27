@@ -3,11 +3,9 @@ pragma solidity ^0.8.17;
 
 import {MerkleProof} from "./utils/MerkleProof.sol";
 
-contract USDCV2 {
-    bytes32 private constant _ROOT_SLOT = keccak256("usdcv2.merkleRoot");
-
-    // 複製原本 USDC Logic Contract 及所有繼承合的狀態變數，讓順序保持一致
-    address private _owner;
+// 複製 USDC Logic Contract 及所有繼承合的狀態變數，讓順序保持一致
+contract USDCStorage {
+    address internal _owner;
     address public pauser;
     bool public paused = false;
     address public blacklister;
@@ -23,11 +21,15 @@ contract USDCV2 {
     uint256 internal totalSupply_ = 0;
     mapping(address => bool) internal minters;
     mapping(address => uint256) internal minterAllowed;
-    address _rescuer;
-    bytes32 DOMAIN_SEPARATOR;
-    mapping(address => mapping(bytes32 => bool)) _authorizationStates;
-    mapping(address => uint256) _permitNonces;
-    uint8 _initializedVersion;
+    address internal _rescuer;
+    bytes32 internal DOMAIN_SEPARATOR;
+    mapping(address => mapping(bytes32 => bool)) internal _authorizationStates;
+    mapping(address => uint256) internal _permitNonces;
+    uint8 internal _initializedVersion;
+}
+
+contract USDCV2 is USDCStorage {
+    bytes32 private constant _ROOT_SLOT = keccak256("usdcv2.merkleRoot");
 
     modifier onlyWhitelisted(bytes32[] memory _merkleProof, address _who) {
         require(inWhitelist(_merkleProof, _who), "You are not in the whitelist!");
