@@ -12,13 +12,15 @@ $ git clone https://github.com/edward821220/RugPullHW.git
 $ forge install
 ```
 
-3.
+3. Add your mainnet_rpc_url to ".env.example" file and replace the filename with ".env"
+
+4.
 
 ```shell
 $ forge test --mc TradingCenterTest -vvvvv
 ```
 
-4.
+5.
 
 ```shell
 $ forge test --mc USDCTest -vvvvv

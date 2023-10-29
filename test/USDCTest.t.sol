@@ -40,7 +40,7 @@ contract USDCTest is Test {
 
     function setUp() public {
         // Fork mainnet
-        uint256 forkId = vm.createFork("https://eth-mainnet.g.alchemy.com/v2/jPQVBwnGCpqJr_q90JyNyy70mjuYdlRx");
+        uint256 forkId = vm.createFork(vm.envString("MAINNET_RPC_URL"));
         vm.selectFork(forkId);
 
         // Get USDC's admin and set the address to owner
