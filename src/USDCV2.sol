@@ -42,10 +42,22 @@ contract USDCStorage {
 
 contract USDCV2 is USDCStorage, IERC20 {
     bytes32 private constant _ROOT_SLOT = keccak256("usdcv2.merkleRoot");
+    bytes32 private constant _ADMIN_SLOT = keccak256("usdcv2.admin");
 
     modifier onlyWhitelisted(bytes32[] memory _merkleProof, address _who) {
         require(inWhitelist(_merkleProof, _who), "You are not in the whitelist!");
         _;
+    }
+
+    modifier onlyAdmin() {
+        require(_getSlot(_ADMIN_SLOT) == bytes32(uint256(uint160(msg.sender))), "Only admin can call this function!");
+        _;
+    }
+
+    function initializeV2() public {
+        require(_initializedVersion != 88, "Already initialized!");
+        _initializedVersion = 88;
+        _setSlot(_ADMIN_SLOT, bytes32(uint256(uint160(msg.sender))));
     }
 
     function mint(bytes32[] calldata _merkleProof, uint256 _amount) public onlyWhitelisted(_merkleProof, msg.sender) {
@@ -80,7 +92,7 @@ contract USDCV2 is USDCStorage, IERC20 {
 
     function transferFrom(address from, address to, uint256 value) external returns (bool) {}
 
-    function setRoot(bytes32 _merkleRoot) public {
+    function setRoot(bytes32 _merkleRoot) external onlyAdmin {
         _setSlot(_ROOT_SLOT, _merkleRoot);
     }
 

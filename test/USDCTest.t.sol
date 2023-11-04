@@ -69,9 +69,11 @@ contract USDCTest is Test {
         USDCV2 usdcV2 = USDCV2(address(usdc));
         vm.stopPrank();
 
-        // 換一個 user 來執行 setRoot 確定有升級成功 (admin 不能執行 logic contract 的 function)
-        vm.prank(alice);
+        // 換一個 user 來執行 initialize & setRoot 確定有升級成功 (admin 不能執行 logic contract 的 function)
+        vm.startPrank(alice);
+        usdcV2.initializeV2();
         usdcV2.setRoot(root);
+        vm.stopPrank();
     }
 
     function testWhitelist() public {
@@ -85,7 +87,8 @@ contract USDCTest is Test {
 
         // 用在白名單里的 Alice 來測試
         vm.startPrank(alice);
-        // setRoot 設定白名單
+        // initialize & setRoot 設定白名單
+        usdcV2.initializeV2();
         usdcV2.setRoot(root);
         bytes32[] memory aliceProof = merkleTree.getProof(leaf, aliceIndex);
 
